@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For credentials provider
+  role          Role      @default(PARTICIPANT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts        Account[]
+  sessions        Session[]
+  organizedEvents Event[]   @relation("Organizer")
+  bookings        Booking[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime // Event start date
+  endDate     DateTime // Event end date (can be same day for single-day events)
+  startTime   DateTime // Daily start time
+  endTime     DateTime // Daily end time
+  isMultiDay  Boolean  @default(false) // Whether event spans multiple days
+  maxCapacity Int?     // Maximum number of participants (null = unlimited)
+  registrationDeadline DateTime? // Last date/time participants can register
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Future fields for upgrade path
+  // meetingLink String?
+  // status      EventStatus @default(ACTIVE)
+  // isRecurring Boolean @default(false)
+
+  organizer   User      @relation("Organizer", fields: [organizerId], references: [id])
+  organizerId String
+  bookings    Booking[]
+}
+
+model Booking {
+  id               String   @id @default(cuid())
+  participantName  String
+  participantEmail String
+  createdAt        DateTime @default(now())
+  
+  // Future fields for upgrade path
+  // status           BookingStatus @default(CONFIRMED)
+  // cancelledAt      DateTime?
+  // notes            String?
+
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+  user    User?  @relation(fields: [userId], references: [id])
+  userId  String?
+}
+
+enum Role {
+  ORGANIZER
+  PARTICIPANT
+}
+
+// Future enums for upgrade path
+// enum EventStatus {
+//   ACTIVE
+//   CANCELLED
+//   COMPLETED
+// }
+
+// enum BookingStatus {
+//   CONFIRMED
+//   CANCELLED
+//   PENDING
+// }
