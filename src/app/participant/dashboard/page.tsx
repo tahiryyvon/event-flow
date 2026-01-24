@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface Event {
   id: string
@@ -32,15 +33,28 @@ interface Booking {
 }
 
 export default function ParticipantDashboard() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<"bookings" | "available">("bookings")
 
   useEffect(() => {
+    if (status === "loading") return // Still loading
+    
+    if (!session) {
+      router.push("/login")
+      return
+    }
+    
+    if (session.user.role !== "PARTICIPANT") {
+      router.push("/organizer/dashboard")
+      return
+    }
+    
     fetchData()
-  }, [])
+  }, [session, status, router])
 
   const fetchData = async () => {
     try {
@@ -84,12 +98,16 @@ export default function ParticipantDashboard() {
     }
   }
 
-  if (loading) {
+  if (loading || status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">Loading...</div>
       </div>
     )
+  }
+
+  if (!session || session.user.role !== "PARTICIPANT") {
+    return null // Will redirect in useEffect
   }
 
   return (

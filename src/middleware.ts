@@ -1,13 +1,11 @@
-import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
-  const session = await auth()
   const { pathname } = request.nextUrl
 
   // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup", "/api/auth"]
+  const publicRoutes = ["/", "/login", "/signup", "/api/"]
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
 
   // Booking pages are public
@@ -20,39 +18,17 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // If no session, redirect to login
-  if (!session) {
+  // Check for session cookie (lightweight check)
+  const sessionToken = request.cookies.get("next-auth.session-token") || 
+                      request.cookies.get("__Secure-next-auth.session-token")
+
+  // If no session token, redirect to login
+  if (!sessionToken) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
 
-  // Redirect to appropriate dashboard if accessing root while authenticated
-  if (pathname === "/" && session.user) {
-    if (session.user.role === "ORGANIZER") {
-      return NextResponse.redirect(new URL("/organizer/dashboard", request.url))
-    } else if (session.user.role === "PARTICIPANT") {
-      return NextResponse.redirect(new URL("/participant/dashboard", request.url))
-    }
-  }
-
-  // Protect organizer routes
-  if (pathname.startsWith("/organizer")) {
-    if (session.user.role !== "ORGANIZER") {
-      if (session.user.role === "PARTICIPANT") {
-        return NextResponse.redirect(new URL("/participant/dashboard", request.url))
-      }
-      return NextResponse.redirect(new URL("/", request.url))
-    }
-  }
-
-  // Protect participant routes
-  if (pathname.startsWith("/participant")) {
-    if (session.user.role !== "PARTICIPANT") {
-      if (session.user.role === "ORGANIZER") {
-        return NextResponse.redirect(new URL("/organizer/dashboard", request.url))
-      }
-      return NextResponse.redirect(new URL("/", request.url))
-    }
-  }
+  // For role-based protection, we'll handle redirects on the client side
+  // This keeps the middleware lightweight and Edge Runtime compatible
 
   return NextResponse.next()
 }
