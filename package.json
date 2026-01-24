@@ -10,7 +10,10 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "generate-secret": "node scripts/generate-secret.js",
+    "setup:users": "node scripts/create-test-user.js",
+    "setup:data": "node scripts/reset-sample-data.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

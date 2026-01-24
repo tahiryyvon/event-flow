@@ -1,40 +1,103 @@
 # Vercel Deployment Guide
 
-## Environment Variables
+## 🚨 Required Environment Variables
 
-Set these in your Vercel project dashboard:
+**IMPORTANT**: You must set these environment variables in Vercel before deployment works.
 
-### Database
+### Step-by-Step Setup
+
+1. **Go to Vercel Dashboard**
+   - Visit [vercel.com/dashboard](https://vercel.com/dashboard)
+   - Select your `event-flow` project
+
+2. **Navigate to Environment Variables**
+   - Go to "Settings" → "Environment Variables"
+   - Add each variable below
+
+### Required Variables
+
+#### Database (Required)
 ```
 DATABASE_URL=postgresql://username:password@host:port/database?sslmode=require
 ```
+- Get from [Neon](https://neon.tech), [Supabase](https://supabase.com), or any PostgreSQL provider
 
-### Authentication
+#### Authentication (Required)
 ```
-NEXTAUTH_SECRET=your-random-secret-key-here
+NEXTAUTH_SECRET=your-random-secret-key-minimum-32-characters
 NEXTAUTH_URL=https://your-app-name.vercel.app
 ```
 
-### Email (Optional)
+**To generate NEXTAUTH_SECRET:**
+```bash
+# Run this command and copy the output
+openssl rand -base64 32
+```
+
+#### Email (Optional)
 ```
 RESEND_API_KEY=re_your_api_key_here
 RESEND_FROM_EMAIL=noreply@yourdomain.com
 ```
+- Get API key from [Resend](https://resend.com/api-keys)
 
-## Quick Deploy Steps
+## Environment Variable Setup in Vercel
 
-1. **Connect Repository**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Click "Import Project" 
-   - Connect your GitHub repository: `tahiryyvon/event-flow`
+### Method 1: Vercel Dashboard (Recommended)
 
-2. **Configure Environment Variables**
-   - In project settings, go to "Environment Variables"
-   - Add all the variables listed above
+1. **Access Settings**
+   ```
+   Vercel Dashboard → Your Project → Settings → Environment Variables
+   ```
 
-3. **Deploy**
-   - Vercel will automatically deploy on every push to master branch
-   - First deployment will take 2-3 minutes
+2. **Add Each Variable**
+   - Click "Add New" for each environment variable
+   - Set environment to "Production, Preview, and Development"
+
+3. **Example Setup**
+   ```
+   Name: DATABASE_URL
+   Value: postgresql://user:pass@host:5432/db?sslmode=require
+   Environment: Production, Preview, Development
+
+   Name: NEXTAUTH_SECRET  
+   Value: [your-32-character-secret]
+   Environment: Production, Preview, Development
+
+   Name: NEXTAUTH_URL
+   Value: https://your-app.vercel.app
+   Environment: Production, Preview, Development
+   ```
+
+### Method 2: Vercel CLI
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login and link project
+vercel login
+vercel link
+
+# Add environment variables
+vercel env add DATABASE_URL
+vercel env add NEXTAUTH_SECRET  
+vercel env add NEXTAUTH_URL
+```
+
+## Deployment Steps
+
+### 1. Connect Repository
+- Import project from GitHub: `tahiryyvon/event-flow`
+- Choose "Next.js" framework preset
+
+### 2. Configure Variables
+- Add all required environment variables (see above)
+- **Verify** each variable is set correctly
+
+### 3. Deploy
+- Click "Deploy" or push to trigger deployment
+- Check build logs for any errors
 
 ## Database Setup
 

@@ -5,6 +5,15 @@ import { prisma } from "@/lib/prisma"
 import { compare } from "bcryptjs"
 import { z } from "zod"
 
+// Validate required environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('NEXTAUTH_SECRET environment variable is required. Generate one with: openssl rand -base64 32')
+}
+
+if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV === 'production') {
+  throw new Error('NEXTAUTH_URL environment variable is required in production')
+}
+
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),

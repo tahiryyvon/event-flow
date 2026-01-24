@@ -134,19 +134,48 @@ The app uses Resend for transactional emails:
 
 ### Vercel (Recommended)
 
-1. Push code to GitHub
-2. Connect to Vercel
-3. Add environment variables
-4. Deploy automatically
+1. **Connect Repository**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Import project from GitHub: `tahiryyvon/event-flow`
+
+2. **Set Environment Variables** (Required!)
+   ```bash
+   # Generate secure secret
+   npm run generate-secret
+   ```
+   Then add to Vercel:
+   - `DATABASE_URL` - PostgreSQL connection string
+   - `NEXTAUTH_SECRET` - Generated secret from above
+   - `NEXTAUTH_URL` - Your Vercel app URL
+   - `RESEND_API_KEY` - (optional) For emails
+
+3. **Deploy**
+   - Vercel deploys automatically on every push
+   - First deployment takes 2-3 minutes
+
+📚 **Detailed Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step instructions
 
 ### Environment Variables for Production
 
 ```env
-DATABASE_URL="your-production-database-url"
-NEXTAUTH_SECRET="secure-random-string"
-NEXTAUTH_URL="https://your-domain.com"
-RESEND_API_KEY="your-resend-api-key"
-RESEND_FROM_EMAIL="noreply@yourdomain.com"
+DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
+NEXTAUTH_SECRET="your-32-char-secret-from-generate-script"
+NEXTAUTH_URL="https://your-app.vercel.app"
+RESEND_API_KEY="re_your-resend-key" # Optional
+RESEND_FROM_EMAIL="noreply@yourdomain.com" # Optional
+```
+
+### Quick Commands
+
+```bash
+# Generate secure NextAuth secret
+npm run generate-secret
+
+# Create test users (after DB setup)
+npm run setup:users
+
+# Add sample events
+npm run setup:data
 ```
 
 ## 🔮 Future Enhancements
