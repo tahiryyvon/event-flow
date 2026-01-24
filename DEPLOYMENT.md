@@ -98,6 +98,18 @@ vercel env add NEXTAUTH_URL
 ### 3. Deploy
 - Click "Deploy" or push to trigger deployment
 - Check build logs for any errors
+- Visit `https://your-app.vercel.app/api/health` to verify environment variables
+
+## 🔍 Environment Variable Health Check
+
+After deployment, check your configuration:
+```
+https://your-app.vercel.app/api/health
+```
+
+This will show you which environment variables are properly configured:
+- ✅ All required variables set = Ready to use  
+- ❌ Missing variables = Check Vercel settings
 
 ## Database Setup
 

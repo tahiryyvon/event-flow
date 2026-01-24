@@ -5,14 +5,9 @@ import { prisma } from "@/lib/prisma"
 import { compare } from "bcryptjs"
 import { z } from "zod"
 
-// Validate required environment variables
-if (!process.env.NEXTAUTH_SECRET) {
-  throw new Error('NEXTAUTH_SECRET environment variable is required. Generate one with: openssl rand -base64 32')
-}
-
-if (!process.env.NEXTAUTH_URL && process.env.NODE_ENV === 'production') {
-  throw new Error('NEXTAUTH_URL environment variable is required in production')
-}
+// Provide a fallback secret for build time to prevent build failures
+// This will be overridden by the real secret at runtime
+const secret = process.env.NEXTAUTH_SECRET || 'fallback-secret-for-build-only-do-not-use-in-production'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -36,6 +31,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // Runtime validation for production environment
+        if (process.env.NODE_ENV === 'production' && secret === 'fallback-secret-for-build-only-do-not-use-in-production') {
+          console.error('❌ NEXTAUTH_SECRET environment variable is required in production.')
+          console.error('💡 Generate one with: openssl rand -base64 32')
+          return null
+        }
+
         try {
           console.log('Auth attempt for:', credentials?.email)
           
@@ -93,4 +95,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   // Optimize for Edge Runtime
   trustHost: true,
+  secret: secret,
 })
