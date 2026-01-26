@@ -8,6 +8,15 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "EventFlow - Simple Event Scheduling",
   description: "Schedule meetings and events with ease. A clean, professional event management platform.",
+  keywords: ["event scheduling", "meeting booking", "calendar management", "event management"],
+  authors: [{ name: "EventFlow Team" }],
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', type: 'image/x-icon' }
+    ],
+  },
+  manifest: '/manifest.json',
 }
 
 export default function RootLayout({
