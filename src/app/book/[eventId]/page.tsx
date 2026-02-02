@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import BookingForm from "./BookingForm"
+import type { Metadata } from "next"
 
 async function getEvent(eventId: string) {
   return await prisma.event.findUnique({
@@ -14,6 +15,59 @@ async function getEvent(eventId: string) {
       },
     },
   })
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ eventId: string }>
+}): Promise<Metadata> {
+  const { eventId } = await params
+  const event = await getEvent(eventId)
+
+  if (!event) {
+    return {
+      title: "Event Not Found - EventFlow",
+      description: "The requested event could not be found.",
+    }
+  }
+
+  const eventDate = new Date(event.startTime).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+
+  const title = `Book: ${event.title} - EventFlow`
+  const description = `${event.description || 'Join us for this event'} • ${eventDate} • Organized by ${event.organizer.name || 'EventFlow'}`
+  
+  const organizerName = event.organizer.name || 'EventFlow'
+  const ogImageUrl = `/api/og?title=${encodeURIComponent(event.title)}&subtitle=${encodeURIComponent(eventDate)}&description=${encodeURIComponent(organizerName)}`
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: `Book ${event.title} - EventFlow`,
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+  }
 }
 
 export default async function BookEventPage({
