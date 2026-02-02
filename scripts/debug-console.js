@@ -46,7 +46,7 @@ console.log('   ✓ Next.js config updated to reduce webpack noise');
 console.log('   ✓ Development-only warning suppression');
 
 console.log('\n🛠️  To Verify the Fix:');
-console.log('   1. Open http://localhost:3001 in your browser');
+console.log('   1. Open http://localhost:3000 in your browser');
 console.log('   2. Open DevTools Console');
 console.log('   3. Check if Zustand deprecation warnings are suppressed');
 console.log('   4. Your app warnings should still appear normally');

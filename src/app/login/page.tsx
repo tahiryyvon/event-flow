@@ -18,29 +18,59 @@ export default function LoginPage() {
     setError("")
 
     try {
+      console.log('Attempting sign in for:', email)
+      
       const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
       })
 
+      console.log('Sign in result:', result)
+
       if (result?.error) {
+        console.error('Sign in error:', result.error)
         setError("Invalid credentials")
-      } else {
+      } else if (result?.ok) {
+        console.log('Sign in successful, fetching session...')
+        
+        // Add a small delay to ensure session is set
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
         // Get the session to determine user role and redirect accordingly
-        const response = await fetch("/api/auth/session")
+        const response = await fetch("/api/auth/session", {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
+        })
+        
+        console.log('Session response status:', response.status)
+        
+        if (!response.ok) {
+          throw new Error(`Session fetch failed: ${response.status}`)
+        }
+        
         const session = await response.json()
+        console.log('Session data:', session)
         
         if (session?.user?.role === "ORGANIZER") {
+          console.log('Redirecting to organizer dashboard')
           router.push("/organizer/dashboard")
         } else if (session?.user?.role === "PARTICIPANT") {
+          console.log('Redirecting to participant dashboard')
           router.push("/participant/dashboard")
         } else {
+          console.log('No specific role, redirecting to home')
           router.push("/")
         }
+      } else {
+        console.error('Unknown sign in result:', result)
+        setError("Authentication failed. Please try again.")
       }
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      console.error('Login error:', err)
+      setError(`An error occurred: ${err instanceof Error ? err.message : 'Please try again.'}`)
     } finally {
       setLoading(false)
     }
