@@ -22,7 +22,7 @@ export default function HomePage() {
           <div className="text-center">
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
               Scheduling made{" "}
-              <span className="text-primary-600">simple</span>
+              <span className="text-primary-700">simple</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               EventFlow helps you schedule meetings and events without the back-and-forth emails. 
@@ -31,13 +31,13 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/signup"
-                className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors"
+                className="bg-primary-700 hover:bg-primary-800 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 text-white px-8 py-3 rounded-lg text-lg font-medium transition-colors focus:outline-none"
               >
                 Get started for free
               </Link>
               <Link
                 href="/login"
-                className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-3 rounded-lg text-lg font-medium transition-colors"
+                className="bg-white hover:bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 text-primary-700 border border-primary-300 hover:border-primary-400 px-8 py-3 rounded-lg text-lg font-medium transition-colors focus:outline-none"
               >
                 Sign in
               </Link>
@@ -59,7 +59,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -71,7 +71,7 @@ export default function HomePage() {
             
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -83,7 +83,7 @@ export default function HomePage() {
             
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>

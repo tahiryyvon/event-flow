@@ -60,7 +60,7 @@ export default function LoginPage() {
             Or{" "}
             <Link
               href="/signup"
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-medium text-primary-700 hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               create a new account
             </Link>

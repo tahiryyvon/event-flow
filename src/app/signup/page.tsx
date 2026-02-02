@@ -57,7 +57,7 @@ export default function SignupPage() {
             Or{" "}
             <Link
               href="/login"
-              className="font-medium text-primary-600 hover:text-primary-500"
+              className="font-medium text-primary-700 hover:text-primary-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               sign in to your existing account
             </Link>
