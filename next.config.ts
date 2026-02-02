@@ -10,6 +10,17 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  webpack: (config, { isServer, nextRuntime }) => {
+    // Exclude heavy Node.js modules from Edge Runtime
+    if (nextRuntime === 'edge') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'bcryptjs': false,
+        '@prisma/client': false,
+      }
+    }
+    return config
+  },
 };
 
 export default nextConfig;

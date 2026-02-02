@@ -1,0 +1,3 @@
+NEXTAUTH_SECRET=pAQyrCYDWq8rdD9MFJ4UvGMZV3/tnWniEsSJcqqYDrQ=
+NEXTAUTH_URL=https://your-actual-vercel-url.vercel.app
+DATABASE_URL=postgresql://neondb_owner:npg_dri4vuHAn0aw@ep-broad-cell-ahk1lgpm-pooler.c-3.us-east-1.aws.neon.tech/neondb?sslmode=require

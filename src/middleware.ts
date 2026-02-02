@@ -1,34 +1,32 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Public routes that don't require authentication
-  const publicRoutes = ["/", "/login", "/signup", "/api/"]
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-
-  // Booking pages are public
-  if (pathname.startsWith("/book/")) {
+  // Skip static files and API routes
+  if (pathname.startsWith("/_next/") || 
+      pathname.startsWith("/api/") ||
+      pathname === "/favicon.ico" ||
+      pathname.includes(".")) {
     return NextResponse.next()
   }
 
-  // If it's a public route, allow access
-  if (isPublicRoute) {
+  // Public routes
+  if (pathname === "/" || 
+      pathname === "/login" || 
+      pathname === "/signup" || 
+      pathname.startsWith("/book/")) {
     return NextResponse.next()
   }
 
-  // Check for session cookie (lightweight check)
+  // Check for session token (Edge Runtime compatible)
   const sessionToken = request.cookies.get("next-auth.session-token") || 
                       request.cookies.get("__Secure-next-auth.session-token")
 
-  // If no session token, redirect to login
-  if (!sessionToken) {
+  if (!sessionToken?.value) {
     return NextResponse.redirect(new URL("/login", request.url))
   }
-
-  // For role-based protection, we'll handle redirects on the client side
-  // This keeps the middleware lightweight and Edge Runtime compatible
 
   return NextResponse.next()
 }
@@ -36,12 +34,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * Match all request paths except static files and API routes
      */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\..*).+)",
   ],
 }
