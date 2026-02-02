@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  webpack: (config, { isServer, nextRuntime }) => {
+  webpack: (config, { isServer, nextRuntime, dev }) => {
     // Exclude heavy Node.js modules from Edge Runtime
     if (nextRuntime === 'edge') {
       config.resolve.alias = {
@@ -19,7 +19,22 @@ const nextConfig: NextConfig = {
         '@prisma/client': false,
       }
     }
+
+    // Reduce webpack noise in development
+    if (dev && !isServer) {
+      config.stats = {
+        ...config.stats,
+        warnings: false,
+      }
+    }
+
     return config
+  },
+  // Reduce build verbosity
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
   },
 };
 
