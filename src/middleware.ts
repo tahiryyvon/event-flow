@@ -58,12 +58,3 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }
-
-export const config = {
-  matcher: [
-    /*
-     * Match all request paths except static files and API routes
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\..*).+)",
-  ],
-}
