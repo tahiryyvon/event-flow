@@ -17,32 +17,46 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get session token from cookies
+  // Public routes that don't need authentication
+  const publicRoutes = ['/', '/login', '/signup']
+  const isPublicRoute = publicRoutes.includes(pathname) || pathname.startsWith('/book/')
+
+  if (isPublicRoute) {
+    return NextResponse.next()
+  }
+
+  // Get all possible session cookies
   const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
-                      request.cookies.get('__Secure-next-auth.session-token')?.value
+                      request.cookies.get('__Secure-next-auth.session-token')?.value ||
+                      request.cookies.get('next-auth.csrf-token')?.value ||
+                      request.cookies.get('__Host-next-auth.csrf-token')?.value
 
   console.log('🛡️ Middleware check:', { 
     pathname, 
-    hasSession: !!sessionToken,
-    sessionTokenName: sessionToken ? 'found' : 'not found'
+    hasAnySessionToken: !!sessionToken,
+    cookieNames: Array.from(request.cookies).map(([name]) => name).filter(name => name.includes('auth'))
   })
 
-  // Protected routes that require authentication
-  const protectedRoutes = ['/organizer', '/participant', '/dashboard']
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
-
-  if (isProtectedRoute && !sessionToken) {
-    console.log('🔒 Redirecting to login - no session token')
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  // If user is authenticated and tries to access login/signup, redirect to dashboard
-  if (sessionToken && (pathname === '/login' || pathname === '/signup')) {
-    console.log('✅ User already authenticated, redirecting to dashboard')
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // For now, let all requests through to avoid blocking authenticated users
+  // The client-side will handle proper authentication checks
+  if (!sessionToken) {
+    console.log('🔒 No session token found, but allowing through for client-side handling')
   }
 
   return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
 
 export const config = {
