@@ -4,28 +4,42 @@ import type { NextRequest } from "next/server"
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Skip static files and API routes
-  if (pathname.startsWith("/_next/") || 
-      pathname.startsWith("/api/") ||
-      pathname === "/favicon.ico" ||
-      pathname.includes(".")) {
+  // Skip middleware for static files, API routes, and Next.js internals
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/favicon') ||
+    pathname.includes('.') ||
+    pathname === '/api/auth/session' ||
+    pathname === '/api/auth/signin' ||
+    pathname === '/api/auth/signout'
+  ) {
     return NextResponse.next()
   }
 
-  // Public routes
-  if (pathname === "/" || 
-      pathname === "/login" || 
-      pathname === "/signup" || 
-      pathname.startsWith("/book/")) {
-    return NextResponse.next()
+  // Get session token from cookies
+  const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
+                      request.cookies.get('__Secure-next-auth.session-token')?.value
+
+  console.log('🛡️ Middleware check:', { 
+    pathname, 
+    hasSession: !!sessionToken,
+    sessionTokenName: sessionToken ? 'found' : 'not found'
+  })
+
+  // Protected routes that require authentication
+  const protectedRoutes = ['/organizer', '/participant', '/dashboard']
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
+
+  if (isProtectedRoute && !sessionToken) {
+    console.log('🔒 Redirecting to login - no session token')
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Check for session token (Edge Runtime compatible)
-  const sessionToken = request.cookies.get("next-auth.session-token") || 
-                      request.cookies.get("__Secure-next-auth.session-token")
-
-  if (!sessionToken?.value) {
-    return NextResponse.redirect(new URL("/login", request.url))
+  // If user is authenticated and tries to access login/signup, redirect to dashboard
+  if (sessionToken && (pathname === '/login' || pathname === '/signup')) {
+    console.log('✅ User already authenticated, redirecting to dashboard')
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
   return NextResponse.next()

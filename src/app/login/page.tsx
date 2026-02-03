@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { signIn } from "next-auth/react"
+import { signIn, getSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
@@ -17,59 +17,50 @@ export default function LoginPage() {
     setLoading(true)
     setError("")
 
+    console.log('🔐 Starting login process...', { email })
+
     try {
-      console.log('Attempting sign in for:', email)
-      
       const result = await signIn("credentials", {
         email,
         password,
-        redirect: false,
+        redirect: false, // Handle redirect manually
       })
 
-      console.log('Sign in result:', result)
+      console.log('🔐 SignIn result:', result)
 
       if (result?.error) {
-        console.error('Sign in error:', result.error)
-        setError("Invalid credentials")
-      } else if (result?.ok) {
-        console.log('Sign in successful, fetching session...')
+        console.error('❌ Login failed:', result.error)
+        setError("Invalid email or password")
+        return
+      }
+
+      if (result?.ok) {
+        console.log('✅ Login successful, getting session...')
         
-        // Add a small delay to ensure session is set
+        // Wait a moment for session to be established
         await new Promise(resolve => setTimeout(resolve, 500))
         
-        // Get the session to determine user role and redirect accordingly
-        const response = await fetch("/api/auth/session", {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache',
-          }
-        })
-        
-        console.log('Session response status:', response.status)
-        
-        if (!response.ok) {
-          throw new Error(`Session fetch failed: ${response.status}`)
-        }
-        
-        const session = await response.json()
-        console.log('Session data:', session)
-        
-        if (session?.user?.role === "ORGANIZER") {
-          console.log('Redirecting to organizer dashboard')
-          router.push("/organizer/dashboard")
-        } else if (session?.user?.role === "PARTICIPANT") {
-          console.log('Redirecting to participant dashboard')
-          router.push("/participant/dashboard")
+        // Get fresh session data using getSession
+        const session = await getSession()
+        console.log('👤 Session data:', session)
+
+        if (session?.user?.role) {
+          const redirectPath = session.user.role === 'ORGANIZER' 
+            ? '/organizer/dashboard' 
+            : '/participant/dashboard'
+          
+          console.log(`🔀 Redirecting to: ${redirectPath}`)
+          
+          // Use router.push with replace to ensure navigation
+          router.push(redirectPath)
+          router.refresh() // Force refresh to ensure session is recognized
         } else {
-          console.log('No specific role, redirecting to home')
-          router.push("/")
+          console.error('❌ No role found in session')
+          setError('Authentication failed. Please try again.')
         }
-      } else {
-        console.error('Unknown sign in result:', result)
-        setError("Authentication failed. Please try again.")
       }
     } catch (err) {
-      console.error('Login error:', err)
+      console.error('❌ Login error:', err)
       setError(`An error occurred: ${err instanceof Error ? err.message : 'Please try again.'}`)
     } finally {
       setLoading(false)
