@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import Link from "next/link"
+import CopyLinkButton from "@/components/CopyLinkButton"
 
 async function getEventWithBookings(eventId: string, organizerId: string) {
   return await prisma.event.findFirst({
@@ -209,12 +210,10 @@ export default async function EventDetailPage({
                     {bookingUrl}
                   </code>
                 </div>
-                <button
-                  onClick={() => navigator.clipboard.writeText(bookingUrl)}
-                  className="mt-3 w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                >
-                  Copy Link
-                </button>
+                <CopyLinkButton
+                  url={bookingUrl}
+                  className="mt-3 w-full text-white px-4 py-2 rounded-lg text-sm font-medium"
+                />
               </div>
 
               <div className="bg-white rounded-lg shadow p-6">

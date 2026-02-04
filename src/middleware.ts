@@ -25,11 +25,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get all possible session cookies
-  const sessionToken = request.cookies.get('next-auth.session-token')?.value ||
-                      request.cookies.get('__Secure-next-auth.session-token')?.value ||
-                      request.cookies.get('next-auth.csrf-token')?.value ||
-                      request.cookies.get('__Host-next-auth.csrf-token')?.value
+  // Get all possible session cookies (updated for NextAuth v5)
+  const sessionToken = request.cookies.get('authjs.session-token')?.value ||
+                      request.cookies.get('__Secure-authjs.session-token')?.value ||
+                      request.cookies.get('next-auth.session-token')?.value ||
+                      request.cookies.get('__Secure-next-auth.session-token')?.value
 
   console.log('🛡️ Middleware check:', { 
     pathname, 
