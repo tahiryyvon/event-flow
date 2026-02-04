@@ -20,6 +20,6 @@
 
 - [x] Create and Run Task ✅ Created development server task running on port 3000
 
-- [x] Launch the Project ✅ Development server running on http://localhost:3001
+- [x] Launch the Project ✅ Development server running on http://localhost:3000
 
 - [x] Ensure Documentation is Complete ✅ README.md created with complete setup instructions
