@@ -184,9 +184,7 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Google OAuth temporarily disabled for debugging */}
-        {/* Enable after configuring Google Console redirect URIs */}
-        {false && (
+        {/* Divider */}
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -197,6 +195,7 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Google Sign In Button */}
           <div className="mt-6">
             <button
               onClick={handleGoogleSignIn}
@@ -234,7 +233,6 @@ export default function LoginPage() {
             </button>
           </div>
         </div>
-        )}
       </div>
     </div>
   )

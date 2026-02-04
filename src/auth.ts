@@ -78,19 +78,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       },
     }),
-    // Google OAuth - Temporarily disabled for debugging
-    // Uncomment after configuring Google Console redirect URIs
-    /*
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          scope: "openid email profile",
-        },
-      },
     }),
-    */
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
