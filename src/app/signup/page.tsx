@@ -83,8 +83,9 @@ export default function SignupPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-black bg-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 placeholder-gray-500 text-black bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                 placeholder="Your full name"
+                style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
               />
             </div>
             <div>
@@ -101,8 +102,9 @@ export default function SignupPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-black bg-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 placeholder-gray-500 text-black bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                 placeholder="you@example.com"
+                style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
               />
             </div>
             <div>
@@ -120,8 +122,9 @@ export default function SignupPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-black bg-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 placeholder-gray-500 text-black bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                 placeholder="At least 6 characters"
+                style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
               />
             </div>
             <div>
@@ -139,6 +142,7 @@ export default function SignupPage() {
                       setFormData({ ...formData, role: e.target.value as "ORGANIZER" })
                     }
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    style={{ accentColor: '#2563eb' }}
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     <strong>Organizer</strong> - I want to create and manage events
@@ -154,6 +158,7 @@ export default function SignupPage() {
                       setFormData({ ...formData, role: e.target.value as "PARTICIPANT" })
                     }
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    style={{ accentColor: '#2563eb' }}
                   />
                   <span className="ml-2 text-sm text-gray-700">
                     <strong>Participant</strong> - I want to book events created by others

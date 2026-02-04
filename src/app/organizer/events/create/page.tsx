@@ -105,8 +105,9 @@ export default function CreateEventPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white placeholder-gray-500 transition-colors"
                   placeholder="e.g., Team Meeting, Client Call"
+                  style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                 />
               </div>
 
@@ -121,8 +122,9 @@ export default function CreateEventPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                  className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white placeholder-gray-500 transition-colors resize-vertical"
                   placeholder="Optional description of the event..."
+                  style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                 />
               </div>
 
@@ -139,7 +141,8 @@ export default function CreateEventPage() {
                       onChange={() =>
                         setFormData({ ...formData, isMultiDay: false, endDate: formData.startDate })
                       }
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      style={{ accentColor: '#2563eb' }}
                     />
                     <span className="ml-2 text-sm text-gray-700">
                       <strong>Single Day Event</strong> - Event happens on one day only
@@ -153,7 +156,8 @@ export default function CreateEventPage() {
                       onChange={() =>
                         setFormData({ ...formData, isMultiDay: true })
                       }
-                      className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300"
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      style={{ accentColor: '#2563eb' }}
                     />
                     <span className="ml-2 text-sm text-gray-700">
                       <strong>Multi-Day Event</strong> - Event spans multiple days
@@ -180,7 +184,8 @@ export default function CreateEventPage() {
                       })
                     }
                     min={new Date().toISOString().split("T")[0]}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white transition-colors"
+                    style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                   />
                 </div>
 
@@ -198,7 +203,8 @@ export default function CreateEventPage() {
                         setFormData({ ...formData, endDate: e.target.value })
                       }
                       min={formData.startDate || new Date().toISOString().split("T")[0]}
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                      className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white transition-colors"
+                      style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                     />
                   </div>
                 )}
@@ -217,7 +223,8 @@ export default function CreateEventPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, startTime: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white transition-colors"
+                    style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                   />
                   {formData.isMultiDay && (
                     <p className="mt-1 text-sm text-gray-500">
@@ -238,7 +245,8 @@ export default function CreateEventPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, endTime: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white transition-colors"
+                    style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                   />
                   {formData.isMultiDay && (
                     <p className="mt-1 text-sm text-gray-500">
@@ -261,8 +269,9 @@ export default function CreateEventPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, maxCapacity: e.target.value })
                     }
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white placeholder-gray-500 transition-colors"
                     placeholder="Leave empty for unlimited"
+                    style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                   />
                   <p className="mt-1 text-sm text-gray-500">
                     Maximum number of participants (optional)
@@ -281,7 +290,8 @@ export default function CreateEventPage() {
                       setFormData({ ...formData, registrationDeadline: e.target.value })
                     }
                     min={new Date().toISOString().slice(0, 16)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                    className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white transition-colors"
+                    style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
                   />
                   <p className="mt-1 text-sm text-gray-500">
                     Last date/time for registration (optional)

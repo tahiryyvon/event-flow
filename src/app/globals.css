@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force all form inputs to have visible text */
+input, textarea, select {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #6b7280 !important;
+  opacity: 1 !important;
+}
+
+/* Ensure proper contrast for all form elements */
+.form-input {
+  @apply text-black bg-white border-gray-300 focus:border-primary-500 focus:ring-primary-500;
+}
+
+/* Radio buttons and checkboxes */
+input[type="radio"], input[type="checkbox"] {
+  accent-color: #0c4a6e !important;
+}
+
+/* Ensure select dropdowns are visible */
+select option {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* Force datetime-local inputs to have visible text */
+input[type="datetime-local"], input[type="date"], input[type="time"] {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-time-picker-indicator {
+  filter: invert(0.5);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

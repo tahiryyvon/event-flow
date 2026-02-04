@@ -66,8 +66,9 @@ export default function BookingForm({ eventId }: BookingFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, participantName: e.target.value })
           }
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white"
+          className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white placeholder-gray-500 transition-colors"
           placeholder="Your full name"
+          style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
         />
       </div>
 
@@ -83,8 +84,9 @@ export default function BookingForm({ eventId }: BookingFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, participantEmail: e.target.value })
           }
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white"
+          className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black bg-white placeholder-gray-500 transition-colors"
           placeholder="you@example.com"
+          style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
         />
       </div>
 
