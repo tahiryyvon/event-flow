@@ -161,9 +161,40 @@ The app uses Resend for transactional emails:
 DATABASE_URL="postgresql://user:pass@host:5432/db?sslmode=require"
 NEXTAUTH_SECRET="your-32-char-secret-from-generate-script"
 NEXTAUTH_URL="https://your-app.vercel.app"
+GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com" # Optional
+GOOGLE_CLIENT_SECRET="your-google-client-secret" # Optional
 RESEND_API_KEY="re_your-resend-key" # Optional
 RESEND_FROM_EMAIL="noreply@yourdomain.com" # Optional
 ```
+
+## 🔐 Google OAuth Setup (Optional)
+
+To enable Google sign-in/sign-up:
+
+1. **Go to [Google Cloud Console](https://console.cloud.google.com/)**
+
+2. **Create or select a project**
+
+3. **Enable Google+ API**
+   - Go to "APIs & Services" → "Library"
+   - Search for "Google+ API" and enable it
+
+4. **Create OAuth 2.0 credentials**
+   - Go to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "OAuth 2.0 Client ID"
+   - Application type: "Web application"
+   - Authorized JavaScript origins: 
+     - `http://localhost:3000` (for development)
+     - `https://your-app.vercel.app` (for production)
+   - Authorized redirect URIs:
+     - `http://localhost:3000/api/auth/callback/google` (for development)
+     - `https://your-app.vercel.app/api/auth/callback/google` (for production)
+
+5. **Add credentials to environment variables**
+   - Copy Client ID to `GOOGLE_CLIENT_ID`
+   - Copy Client Secret to `GOOGLE_CLIENT_SECRET`
+
+**Note**: Google sign-ups automatically get "Participant" role. Users can be upgraded to "Organizer" by updating their role in the database.
 
 ### Quick Commands
 

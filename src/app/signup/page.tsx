@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { signIn, getSession } from "next-auth/react"
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -13,7 +14,48 @@ export default function SignupPage() {
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
   const router = useRouter()
+
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true)
+    setError("")
+    
+    try {
+      console.log('🔐 Starting Google sign-up...')
+      const result = await signIn("google", {
+        redirect: false,
+      })
+      
+      if (result?.error) {
+        console.error('❌ Google sign-up failed:', result.error)
+        setError("Google sign-up failed. Please try again.")
+        return
+      }
+      
+      if (result?.ok) {
+        console.log('✅ Google sign-up successful')
+        // Wait for session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        const session = await getSession()
+        console.log('👤 Google session data:', session)
+        
+        if (session?.user?.role) {
+          // New Google users get PARTICIPANT role by default
+          const redirectPath = '/participant/dashboard'
+          
+          console.log(`🔀 Redirecting to: ${redirectPath}`)
+          router.push(redirectPath)
+        }
+      }
+    } catch (err) {
+      console.error('❌ Google sign-up error:', err)
+      setError("An error occurred during Google sign-up. Please try again.")
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -178,6 +220,59 @@ export default function SignupPage() {
             </button>
           </div>
         </form>
+
+        {/* Divider */}
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-gray-50 text-gray-500">Or sign up with</span>
+            </div>
+          </div>
+
+          {/* Google Sign Up Button */}
+          <div className="mt-6">
+            <button
+              onClick={handleGoogleSignUp}
+              disabled={googleLoading}
+              className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {googleLoading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full mr-2"></div>
+                  Signing up with Google...
+                </div>
+              ) : (
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="currentColor"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    />
+                    <path
+                      fill="currentColor"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    />
+                    <path
+                      fill="currentColor"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                  </svg>
+                  Continue with Google
+                </div>
+              )}
+            </button>
+            <p className="mt-2 text-xs text-gray-500 text-center">
+              Google sign-ups automatically get Participant access. You can upgrade to Organizer later.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

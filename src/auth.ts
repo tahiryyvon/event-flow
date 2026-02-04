@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
 import { prisma } from "@/lib/prisma"
 import { compare } from "bcryptjs"
 import { z } from "zod"
@@ -77,11 +78,54 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       },
     }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        try {
+          // Check if user already exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
+          })
+          
+          if (!existingUser) {
+            // Create new user with PARTICIPANT role as default for Google OAuth
+            await prisma.user.create({
+              data: {
+                id: user.id!,
+                email: user.email!,
+                name: user.name!,
+                role: "PARTICIPANT", // Default role for Google sign-ups
+                password: "", // No password needed for OAuth users
+              }
+            })
+          }
+          
+          return true
+        } catch (error) {
+          console.error("Error creating Google user:", error)
+          return false
+        }
+      }
+      
+      return true // Allow other providers
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
+      } else if (token.email) {
+        // Fetch role from database if not in token
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email },
+          select: { role: true }
+        })
+        if (dbUser) {
+          token.role = dbUser.role
+        }
       }
       return token
     },
