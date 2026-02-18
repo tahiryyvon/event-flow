@@ -21,8 +21,7 @@ export async function GET() {
         user: {
           id: session.user?.id,
           email: session.user?.email,
-          name: session.user?.name,
-          role: session.user?.role
+          name: session.user?.name
         },
         expires: session.expires
       } : null,

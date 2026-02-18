@@ -26,7 +26,6 @@ export async function GET() {
     current_session: session ? {
       user_id: session.user?.id,
       email: session.user?.email,
-      role: session.user?.role,
       provider: 'authenticated'
     } : null,
     status: 'fixed'

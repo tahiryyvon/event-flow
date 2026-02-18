@@ -29,14 +29,12 @@ export async function GET() {
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
-        role: session.user.role,
         image: session.user.image
       },
       database_user: dbUser ? {
         id: dbUser.id,
         email: dbUser.email,
         name: dbUser.name,
-        role: dbUser.role,
         created_at: dbUser.createdAt,
         accounts: dbUser.accounts.map(acc => ({
           provider: acc.provider,

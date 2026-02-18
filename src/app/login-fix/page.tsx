@@ -10,145 +10,287 @@ import { useRouter } from "next/navigation"import { useRouter } from "next/navig
 
 
 
-export default function LoginFixPage() {export default function LoginFixPage() {
+export default function LoginFixPage() {
 
-  const [email, setEmail] = useState("tahiry.yvon@gmail.com")  const [email, setEmail] = useState("tahiry.yvon@gmail.com")
+  const [email, setEmail] = useState("tahiry.yvon@gmail.com")
+
+  const [password, setPassword] = useState("")export default function LoginFixPage() {export default function LoginFixPage() {
+
+  const [result, setResult] = useState<any>(null)
+
+  const [loading, setLoading] = useState(false)  const [email, setEmail] = useState("tahiry.yvon@gmail.com")  const [email, setEmail] = useState("tahiry.yvon@gmail.com")
+
+  const router = useRouter()
 
   const [password, setPassword] = useState("")  const [password, setPassword] = useState("")
 
-  const [result, setResult] = useState<any>(null)  const [result, setResult] = useState<any>(null)
+  const testNextAuthLogin = async (e: React.FormEvent) => {
 
-  const [loading, setLoading] = useState(false)  const [loading, setLoading] = useState(false)
+    e.preventDefault()  const [result, setResult] = useState<any>(null)  const [result, setResult] = useState<any>(null)
 
-  const router = useRouter()  const router = useRouter()
+    setLoading(true)
 
-
-
-  const testNextAuthLogin = async (e: React.FormEvent) => {  const testNextAuthLogin = async (e: React.FormEvent) => {
-
-    e.preventDefault()    e.preventDefault()
-
-    setLoading(true)    setLoading(true)
-
-    setResult(null)    setResult(null)
+    setResult(null)  const [loading, setLoading] = useState(false)  const [loading, setLoading] = useState(false)
 
 
 
-    try {    try {
+    try {  const router = useRouter()  const router = useRouter()
 
-      console.log('🔐 Attempting NextAuth signIn...')      console.log('🔐 Attempting NextAuth signIn...')
+      console.log('🔐 Attempting NextAuth signIn...')
 
-            
+      
 
-      // Use NextAuth signIn with redirect: false to capture the result      // Use NextAuth signIn with redirect: false to capture the result
+      // Use NextAuth signIn with redirect: false to capture the result
 
-      const nextAuthResult = await signIn("credentials", {      const nextAuthResult = await signIn("credentials", {
+      const nextAuthResult = await signIn("credentials", {  const testNextAuthLogin = async (e: React.FormEvent) => {  const testNextAuthLogin = async (e: React.FormEvent) => {
 
-        email,        email,
+        email,
 
-        password,        password,
+        password,    e.preventDefault()    e.preventDefault()
 
-        redirect: false, // Don't redirect automatically        redirect: false, // Don't redirect automatically
+        redirect: false, // Don't redirect automatically
 
-      })      })
-
-
-
-      console.log('🔐 NextAuth result:', nextAuthResult)      console.log('🔐 NextAuth result:', nextAuthResult)
+      })    setLoading(true)    setLoading(true)
 
 
 
-      if (nextAuthResult?.ok) {      if (nextAuthResult?.ok) {
+      console.log('🔐 NextAuth result:', nextAuthResult)    setResult(null)    setResult(null)
 
-        setResult({        setResult({
 
-          success: true,          success: true,
 
-          message: "Login successful! Redirecting to dashboard...",          message: "Login successful! Redirecting to dashboard...",
+      if (nextAuthResult?.ok) {
 
-          nextAuthResult,          nextAuthResult,
+        setResult({
 
-          timestamp: new Date().toISOString()          timestamp: new Date().toISOString()
+          type: 'success',    try {    try {
 
-        })        })
+          success: true,
 
-                
+          data: nextAuthResult,      console.log('🔐 Attempting NextAuth signIn...')      console.log('🔐 Attempting NextAuth signIn...')
 
-        // Manual redirect after successful login        // Manual redirect after successful login
+          message: "Login successful! Redirecting to dashboard...",
 
-        setTimeout(() => {        setTimeout(() => {
+          nextAuth: nextAuthResult,            
 
-          router.push('/dashboard')          router.push('/dashboard')
+          timestamp: new Date().toISOString()
 
-        }, 2000)        }, 2000)
+        })      // Use NextAuth signIn with redirect: false to capture the result      // Use NextAuth signIn with redirect: false to capture the result
 
-      } else {      } else {
+        
 
-        setResult({        setResult({
+        // Redirect after showing success      const nextAuthResult = await signIn("credentials", {      const nextAuthResult = await signIn("credentials", {
 
-          success: false,          success: false,
+        setTimeout(() => {
 
-          error: nextAuthResult?.error || "Login failed",          error: nextAuthResult?.error || "Login failed",
+          router.push('/dashboard')        email,        email,
 
-          nextAuthResult,          nextAuthResult,
+        }, 2000)
 
-          timestamp: new Date().toISOString()          timestamp: new Date().toISOString()
+      } else {        password,        password,
 
-        })        })
+        setResult({
 
-      }      }
+          type: 'error',        redirect: false, // Don't redirect automatically        redirect: false, // Don't redirect automatically
 
-    } catch (error) {    } catch (error) {
+          success: false,
 
-      console.error('❌ Login error:', error)      console.error('❌ Login error:', error)
+          error: nextAuthResult?.error || 'Unknown error',      })      })
 
-      setResult({      setResult({
+          message: `Login failed: ${nextAuthResult?.error || 'Unknown error'}`,
 
-        success: false,        success: false,
+          nextAuth: nextAuthResult,
 
-        error: error instanceof Error ? error.message : 'Unknown error',        error: error instanceof Error ? error.message : 'Unknown error',
+          timestamp: new Date().toISOString()
 
-        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
+        })      console.log('🔐 NextAuth result:', nextAuthResult)      console.log('🔐 NextAuth result:', nextAuthResult)
 
-      })      })
+      }
+
+    } catch (error) {
+
+      console.error('🔐 NextAuth signIn error:', error)
+
+      setResult({      if (nextAuthResult?.ok) {      if (nextAuthResult?.ok) {
+
+        type: 'error',
+
+        success: false,        setResult({        setResult({
+
+        error: error instanceof Error ? error.message : 'Unknown error',
+
+        message: `Exception during login: ${error instanceof Error ? error.message : 'Unknown error'}`,          success: true,          success: true,
+
+        timestamp: new Date().toISOString()
+
+      })          message: "Login successful! Redirecting to dashboard...",          message: "Login successful! Redirecting to dashboard...",
+
+    } finally {
+
+      setLoading(false)          nextAuthResult,          nextAuthResult,
+
+    }
+
+  }          timestamp: new Date().toISOString()          timestamp: new Date().toISOString()
+
+
+
+  return (        })        })
+
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">                
+
+        <h1 className="text-center text-3xl font-bold text-gray-900 mb-8">
+
+          Login Debug Tool        // Manual redirect after successful login        // Manual redirect after successful login
+
+        </h1>
+
+                setTimeout(() => {        setTimeout(() => {
+
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+
+          <form className="space-y-6" onSubmit={testNextAuthLogin}>          router.push('/dashboard')          router.push('/dashboard')
+
+            <div>
+
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">        }, 2000)        }, 2000)
+
+                Email
+
+              </label>      } else {      } else {
+
+              <div className="mt-1">
+
+                <input        setResult({        setResult({
+
+                  id="email"
+
+                  name="email"          success: false,          success: false,
+
+                  type="email"
+
+                  value={email}          error: nextAuthResult?.error || "Login failed",          error: nextAuthResult?.error || "Login failed",
+
+                  onChange={(e) => setEmail(e.target.value)}
+
+                  required          nextAuthResult,          nextAuthResult,
+
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+
+                />          timestamp: new Date().toISOString()          timestamp: new Date().toISOString()
+
+              </div>
+
+            </div>        })        })
+
+
+
+            <div>      }      }
+
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+
+                Password    } catch (error) {    } catch (error) {
+
+              </label>
+
+              <div className="mt-1">      console.error('❌ Login error:', error)      console.error('❌ Login error:', error)
+
+                <input
+
+                  id="password"      setResult({      setResult({
+
+                  name="password"
+
+                  type="password"        success: false,        success: false,
+
+                  value={password}
+
+                  onChange={(e) => setPassword(e.target.value)}        error: error instanceof Error ? error.message : 'Unknown error',        error: error instanceof Error ? error.message : 'Unknown error',
+
+                  required
+
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
+
+                />
+
+              </div>      })      })
+
+            </div>
 
     } finally {    } finally {
 
-      setLoading(false)      setLoading(false)
+            <div>
 
-    }    }
+              <button      setLoading(false)      setLoading(false)
 
-  }  }
+                type="submit"
+
+                disabled={loading}    }    }
+
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+
+              >  }  }
+
+                {loading ? 'Testing Login...' : 'Test NextAuth Login'}
+
+              </button>
+
+            </div>
+
+          </form>  const testAuthStatus = async () => {  const testAuthStatus = async () => {
 
 
 
-  const testAuthStatus = async () => {  const testAuthStatus = async () => {
+          {result && (    try {    try {
 
-    try {    try {
+            <div className="mt-6">
 
-      const response = await fetch("/api/auth-status")      const response = await fetch("/api/auth-status")
+              <div className={`p-4 rounded-md ${result.success ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>      const response = await fetch("/api/auth-status")      const response = await fetch("/api/auth-status")
 
-      const data = await response.json()      const data = await response.json()
+                <h3 className={`text-sm font-medium ${result.success ? 'text-green-800' : 'text-red-800'}`}>
 
-      setResult({      setResult({
+                  {result.success ? 'Success!' : 'Error!'}      const data = await response.json()      const data = await response.json()
 
-        authStatus: data,        authStatus: data,
+                </h3>
 
-        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
+                <div className={`mt-2 text-sm ${result.success ? 'text-green-700' : 'text-red-700'}`}>      setResult({      setResult({
 
-      })      })
+                  <p>{result.message}</p>
 
-    } catch (error) {    } catch (error) {
+                </div>        authStatus: data,        authStatus: data,
 
-      setResult({      setResult({
+                <details className="mt-4">
 
-        error: "Failed to check auth status",        error: "Failed to check auth status",
+                  <summary className="cursor-pointer text-sm font-medium">        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
 
-        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
+                    Show Technical Details
 
-      })      })
+                  </summary>      })      })
 
-    }    }
+                  <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto">
+
+                    {JSON.stringify(result, null, 2)}    } catch (error) {    } catch (error) {
+
+                  </pre>
+
+                </details>      setResult({      setResult({
+
+              </div>
+
+            </div>        error: "Failed to check auth status",        error: "Failed to check auth status",
+
+          )}
+
+        </div>        timestamp: new Date().toISOString()        timestamp: new Date().toISOString()
+
+      </div>
+
+    </div>      })      })
+
+  )
+
+}    }    }
 
   }  }
 

@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
         session_exists: !!session,
         user_id: session?.user?.id || "No session",
         user_email: session?.user?.email || "No session",
-        user_role: session?.user?.role || "No session",
         
         // Headers
         headers: {

@@ -30,10 +30,8 @@ export default function DashboardRedirect() {
         console.log('🔍 DashboardRedirect: Auth API response', authData)
         setDebugInfo(`Auth check result: ${authData.authenticated}`)
         
-        if (authData.authenticated && authData.user?.role) {
-          const dashboardPath = authData.user.role === 'ORGANIZER' 
-            ? '/organizer/dashboard' 
-            : '/participant/dashboard'
+        if (authData.authenticated) {
+          const dashboardPath = '/dashboard'
           
           console.log('🔀 DashboardRedirect: Navigating to', dashboardPath)
           setDebugInfo(`Redirecting to ${dashboardPath}...`)
@@ -43,11 +41,6 @@ export default function DashboardRedirect() {
           setTimeout(() => {
             router.replace(dashboardPath)
           }, 500)
-          
-        } else if (authData.authenticated && !authData.user?.role) {
-          console.error('❌ DashboardRedirect: User authenticated but no role found')
-          setDebugInfo('User has no role assigned')
-          setHasRedirected(true)
           router.replace('/login?error=no_role')
           
         } else {

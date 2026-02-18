@@ -11,7 +11,7 @@ export async function GET() {
       hasSession: !!session,
       hasUser: !!session?.user,
       email: session?.user?.email,
-      role: session?.user?.role
+      id: session?.user?.id
     })
     
     const result = {
@@ -20,14 +20,12 @@ export async function GET() {
         id: session.user.id,
         email: session.user.email,
         name: session.user.name,
-        role: session.user.role,
       } : null,
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
       debug: {
         hasSession: !!session,
         hasUser: !!session?.user,
-        hasRole: !!session?.user?.role
       }
     }
     

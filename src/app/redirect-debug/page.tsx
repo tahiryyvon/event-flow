@@ -16,7 +16,7 @@ export default function RedirectDebugPage() {
       const data = await response.json()
       setDebugInfo(data)
     } catch (error) {
-      setDebugInfo({ error: error.message })
+      setDebugInfo({ error: error instanceof Error ? error.message : 'Unknown error' })
     }
   }
 
@@ -54,7 +54,7 @@ export default function RedirectDebugPage() {
               {session && (
                 <>
                   <p><strong>Email:</strong> {session.user?.email}</p>
-                  <p><strong>Role:</strong> {session.user?.role || 'No role'}</p>
+                  <p><strong>Role:</strong> N/A</p>
                 </>
               )}
             </div>
@@ -87,7 +87,7 @@ export default function RedirectDebugPage() {
                   {debugInfo.session && (
                     <div className="mt-2 text-sm">
                       <p>Email: {debugInfo.session.user.email}</p>
-                      <p>Role: {debugInfo.session.user.role}</p>
+                      <p>Role: N/A</p>
                     </div>
                   )}
                 </div>

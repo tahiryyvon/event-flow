@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
       user: user ? {
         id: user.id,
         name: user.name,
-        role: user.role,
         hasPassword: !!user.password,
         accountsCount: user.accounts.length,
         linkedBookingsCount: user.bookings.length
@@ -69,12 +68,9 @@ export async function POST(request: NextRequest) {
       })),
       diagnosis: {
         userExists: !!user,
-        hasRole: !!user?.role,
         hasUnlinkedBookings: unlinkedBookings.length > 0,
         recommendation: user 
-          ? user.role 
-            ? 'User account is properly set up'
-            : 'User exists but needs role assignment'
+          ? 'User account is properly set up'
           : unlinkedBookings.length > 0
             ? 'Create user account to link existing bookings'
             : 'No issues found'

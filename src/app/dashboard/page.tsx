@@ -317,11 +317,10 @@ export default function Dashboard() {
                   </p>
 
                   {/* Search Results */}
-                  {activeTab === 'find-events' && (
-                    <div className="mt-6">
-                      <h3 className="text-lg font-medium text-gray-900 mb-4">
-                        {searchQuery ? `Search results for "${searchQuery}"` : 'Available Public Events'}
-                      </h3>
+                  <div className="mt-6">
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      {searchQuery ? `Search results for "${searchQuery}"` : 'Available Public Events'}
+                    </h3>
                       
                       {searchLoading ? (
                         <div className="flex items-center justify-center py-8">
@@ -388,7 +387,6 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                  )}
                 </div>
               </CardContent>
             </Card>

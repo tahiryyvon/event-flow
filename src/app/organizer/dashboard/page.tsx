@@ -21,7 +21,7 @@ async function getOrganizerEvents(userId: string) {
 export default async function OrganizerDashboard() {
   const session = await auth()
 
-  if (!session || session.user.role !== "ORGANIZER") {
+  if (!session) {
     redirect("/")
   }
 

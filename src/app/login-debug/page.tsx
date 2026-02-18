@@ -25,7 +25,7 @@ export default function LoginTroubleshootPage() {
       const result = await response.json()
       setDebugResult(result)
     } catch (error) {
-      setDebugResult({ status: 'error', error: error.message })
+      setDebugResult({ status: 'error', error: error instanceof Error ? error.message : 'Unknown error' })
     } finally {
       setLoading(false)
     }
@@ -104,7 +104,7 @@ export default function LoginTroubleshootPage() {
                   <ul className="space-y-1 text-sm">
                     <li><strong>Email:</strong> {debugResult.user.email}</li>
                     <li><strong>Name:</strong> {debugResult.user.name}</li>
-                    <li><strong>Role:</strong> <span className="font-semibold text-blue-600">{debugResult.user.role}</span></li>
+                    <li><strong>Role:</strong> <span className="font-semibold text-blue-600">N/A</span></li>
                     <li><strong>Account Created:</strong> {new Date(debugResult.user.createdAt).toLocaleString()}</li>
                     <li><strong>Has Password:</strong> {debugResult.user.hasPassword ? '✅ Yes' : '❌ No'}</li>
                   </ul>

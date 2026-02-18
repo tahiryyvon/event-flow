@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
       message: 'Password updated successfully',
       user: {
         email: user.email,
-        name: user.name,
-        role: user.role
+        name: user.name
       }
     })
 

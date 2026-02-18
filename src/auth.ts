@@ -70,7 +70,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             userFound: !!user,
             userId: user?.id,
             userEmail: user?.email,
-            userRole: user?.role,
             hasStoredPassword: !!user?.password,
             storedPasswordLength: user?.password?.length || 0
           })

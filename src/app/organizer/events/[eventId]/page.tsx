@@ -30,7 +30,7 @@ export default async function EventDetailPage({
   const { eventId } = await params
   const session = await auth()
 
-  if (!session || session.user.role !== "ORGANIZER") {
+  if (!session) {
     redirect("/")
   }
 

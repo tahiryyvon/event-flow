@@ -48,11 +48,6 @@ export default function ParticipantDashboard() {
       return
     }
     
-    if (session.user.role !== "PARTICIPANT") {
-      router.push("/organizer/dashboard")
-      return
-    }
-    
     fetchData()
   }, [session, status, router])
 
@@ -106,7 +101,7 @@ export default function ParticipantDashboard() {
     )
   }
 
-  if (!session || session.user.role !== "PARTICIPANT") {
+  if (!session) {
     return null // Will redirect in useEffect
   }
 
