@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function GET() {
   if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(
@@ -10,6 +8,8 @@ export async function GET() {
       { status: 500 }
     )
   }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   try {
     const result = await resend.emails.send({

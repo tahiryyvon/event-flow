@@ -1,10 +1,18 @@
 import { Resend } from "resend"
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("RESEND_API_KEY environment variable is required")
-}
+let resend: Resend | null = null
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY environment variable is required")
+  }
+  
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  
+  return resend
+}
 
 interface BookingEmailData {
   eventTitle: string
@@ -28,7 +36,8 @@ export async function sendBookingConfirmationEmail(data: BookingEmailData) {
   } = data
 
   try {
-    const { data: emailResult, error } = await resend.emails.send({
+    const resendClient = getResendClient()
+    const { data: emailResult, error } = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "EventFlow <noreply@eventflow.com>",
       to: [participantEmail],
       subject: `Booking Confirmed: ${eventTitle}`,
@@ -101,7 +110,8 @@ export async function sendOrganizerNotificationEmail(data: OrganizerNotification
   } = data
 
   try {
-    const { data: emailResult, error } = await resend.emails.send({
+    const resendClient = getResendClient()
+    const { data: emailResult, error } = await resendClient.emails.send({
       from: process.env.RESEND_FROM_EMAIL || "EventFlow <noreply@eventflow.com>",
       to: [organizerEmail],
       subject: `New Booking: ${participantName} booked ${eventTitle}`,
