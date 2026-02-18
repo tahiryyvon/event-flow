@@ -7,13 +7,12 @@ const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["ORGANIZER", "PARTICIPANT"]),
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, password, role } = registerSchema.parse(body)
+    const { name, email, password } = registerSchema.parse(body)
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -30,13 +29,12 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await hash(password, 12)
 
-    // Create user
+    // Create user (no role needed - all users have same capabilities)
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role,
       },
     })
 

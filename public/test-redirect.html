@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Redirect</title>
+</head>
+<body>
+    <h1>EventFlow Redirect Test</h1>
+    <p>This page tests the automatic redirect functionality.</p>
+    
+    <h2>Test Links:</h2>
+    <ul>
+        <li><a href="http://localhost:3000/" target="_blank">Root Page (/) - Should redirect to dashboard if logged in</a></li>
+        <li><a href="http://localhost:3000/login" target="_blank">Login Page - Should redirect to dashboard if already logged in</a></li>
+        <li><a href="http://localhost:3000/signup" target="_blank">Signup Page - Should redirect to dashboard if already logged in</a></li>
+        <li><a href="http://localhost:3000/dashboard" target="_blank">Dashboard - Should show dashboard if logged in, or redirect to login if not</a></li>
+        <li><a href="http://localhost:3000/api/auth/signout" target="_blank">Sign Out</a></li>
+    </ul>
+
+    <h2>Instructions:</h2>
+    <ol>
+        <li>First, sign out using the link above</li>
+        <li>Try accessing the root page (/) - you should see the landing page</li>
+        <li>Login using the login page</li>
+        <li>Now try accessing the root page (/) again - you should be automatically redirected to dashboard</li>
+    </ol>
+</body>
+</html>

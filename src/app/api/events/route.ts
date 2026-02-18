@@ -6,6 +6,8 @@ import { z } from "zod"
 const createEventSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
+  banner: z.string().optional(), // Base64 encoded banner image
+  type: z.enum(["PRIVATE", "PUBLIC"]),
   isMultiDay: z.boolean(),
   startDate: z.string(),
   endDate: z.string().optional(),
@@ -17,14 +19,21 @@ const createEventSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📝 Events API: POST request received')
+    
     const session = await auth()
+    console.log('📝 Events API: Session check:', session ? { id: session.user.id } : null)
 
-    if (!session || session.user.role !== "ORGANIZER") {
+    if (!session) {
+      console.log('📝 Events API: Unauthorized - no session')
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const body = await request.json()
-    const { title, description, isMultiDay, startDate, endDate, startTime, endTime, maxCapacity, registrationDeadline } = createEventSchema.parse(body)
+    console.log('📝 Events API: Request body:', body)
+    
+    const { title, description, banner, type, isMultiDay, startDate, endDate, startTime, endTime, maxCapacity, registrationDeadline } = createEventSchema.parse(body)
+    console.log('📝 Events API: Schema parsed successfully:', { title, type, isMultiDay })
 
     // Handle single-day vs multi-day events
     const eventStartDate = new Date(startDate)
@@ -77,6 +86,8 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description,
+        banner: banner || null, // Add banner support
+        type: type as any,
         startDate: eventStartDate,
         endDate: eventEndDate,
         startTime: startDateTime,
@@ -85,19 +96,22 @@ export async function POST(request: NextRequest) {
         maxCapacity: maxCapacityNumber,
         registrationDeadline: registrationDeadlineDate,
         organizerId: session.user.id,
-      },
+      } as any, // Temporary type bypass until Prisma regenerates properly
     })
 
     return NextResponse.json(event, { status: 201 })
   } catch (error) {
+    console.error('❌ Events API: Create event error:', error)
+    
     if (error instanceof z.ZodError) {
+      console.log('📝 Events API: Validation error:', error.errors)
       return NextResponse.json(
         { error: error.errors[0].message },
         { status: 400 }
       )
     }
 
-    console.error("Create event error:", error)
+    console.error("📝 Events API: Unexpected error:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -109,7 +123,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth()
 
-    if (!session || session.user.role !== "ORGANIZER") {
+    if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

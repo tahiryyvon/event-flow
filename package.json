@@ -11,6 +11,7 @@
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:reset": "node scripts/reset-database.js",
     "generate-secret": "node scripts/generate-secret.js",
     "setup:users": "node scripts/create-test-user.js",
     "setup:data": "node scripts/reset-sample-data.js"
@@ -21,6 +22,7 @@
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.574.0",
     "next": "^15.1.0",
     "next-auth": "5.0.0-beta.25",
     "prisma": "^6.1.0",

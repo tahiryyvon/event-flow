@@ -89,6 +89,25 @@ export default async function EventDetailPage({
                 </h2>
                 
                 <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Event Type</h3>
+                    <div className="mt-1 flex items-center">
+                      <span className={`px-3 py-1 text-sm font-medium rounded-full ${
+                        event.type === 'PRIVATE' 
+                          ? 'bg-gray-100 text-gray-800 border border-gray-300' 
+                          : 'bg-green-100 text-green-800 border border-green-200'
+                      }`}>
+                        {event.type === 'PRIVATE' ? '🔒 Private Event' : '🌐 Public Event'}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">
+                      {event.type === 'PRIVATE' 
+                        ? 'Only you can see this event and manually add participants'
+                        : 'Anyone with the link can view and book this event'
+                      }
+                    </p>
+                  </div>
+                  
                   {event.description && (
                     <div>
                       <h3 className="text-sm font-medium text-gray-700">Description</h3>

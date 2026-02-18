@@ -10,10 +10,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    if (session.user.role !== "PARTICIPANT") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-    }
-
     // Get all bookings for this participant
     const bookings = await prisma.booking.findMany({
       where: {

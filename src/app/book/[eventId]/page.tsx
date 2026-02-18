@@ -1,11 +1,15 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
+import Image from "next/image"
 import BookingForm from "./BookingForm"
 import type { Metadata } from "next"
 
 async function getEvent(eventId: string) {
   return await prisma.event.findUnique({
-    where: { id: eventId },
+    where: { 
+      id: eventId,
+      type: "PUBLIC" // Only allow booking for public events
+    },
     include: {
       organizer: {
         select: {
@@ -141,18 +145,32 @@ export default async function BookEventPage({
               </p>
             </div>
           ) : (
-            <div className="bg-white rounded-lg shadow p-8">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {event.title}
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  with {event.organizer.name}
-                </p>
-                
-                {event.description && (
-                  <p className="text-gray-700 mb-4">{event.description}</p>
-                )}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              {/* Banner Image */}
+              {(event as any).banner && (
+                <div className="relative aspect-[16/9] w-full">
+                  <Image 
+                    src={(event as any).banner} 
+                    alt={event.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30"></div>
+                </div>
+              )}
+              
+              <div className="p-8">
+                <div className="text-center mb-8">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    {event.title}
+                  </h2>
+                  <p className="text-gray-600 mb-4">
+                    with {(event as any).organizer?.name || 'EventFlow'}
+                  </p>
+                  
+                  {event.description && (
+                    <p className="text-gray-700 mb-4">{event.description}</p>
+                  )}
                 
                 <div className="flex items-center justify-center space-x-6 text-sm text-gray-500 mb-6">
                   <div className="flex items-center">
@@ -263,9 +281,10 @@ export default async function BookEventPage({
                 )}
 
                 <div className="mb-8"></div>
-              </div>
+                </div>
 
-              <BookingForm eventId={event.id} />
+                <BookingForm eventId={event.id} />
+              </div>
             </div>
           )}
         </div>

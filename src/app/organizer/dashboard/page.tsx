@@ -117,9 +117,18 @@ export default async function OrganizerDashboard() {
                 <div key={event.id} className="bg-white rounded-lg shadow p-6">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {event.title}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {event.title}
+                        </h3>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          event.type === 'PRIVATE' 
+                            ? 'bg-gray-100 text-gray-800 border border-gray-300' 
+                            : 'bg-green-100 text-green-800 border border-green-200'
+                        }`}>
+                          {event.type === 'PRIVATE' ? '🔒 Private' : '🌐 Public'}
+                        </span>
+                      </div>
                       {event.description && (
                         <p className="text-gray-600 mb-4">{event.description}</p>
                       )}

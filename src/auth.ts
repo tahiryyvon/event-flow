@@ -16,13 +16,24 @@ const loginSchema = z.object({
 })
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma) as any,
   session: { 
-    strategy: "jwt",
+    strategy: "jwt", // Using JWT for better reliability
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
     signIn: "/login",
+  },
+  debug: process.env.NODE_ENV === "development",
+  logger: {
+    error(error: Error) {
+      console.error('❌ NextAuth Error:', error)
+    },
+    warn(code: string) {
+      console.warn('⚠️ NextAuth Warning:', code)
+    },
+    debug(code: string, metadata?: any) {
+      console.log('🔍 NextAuth Debug:', code, metadata)
+    }
   },
   providers: [
     Credentials({
@@ -40,40 +51,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         try {
-          console.log('Auth attempt for:', credentials?.email)
-          
-          const { email, password } = loginSchema.parse(credentials)
+          console.log('🔐 Authorize function called for:', credentials?.email)
+        console.log('🔐 Raw credentials received:', {
+          email: credentials?.email,
+          hasPassword: !!(credentials as any)?.password,
+          passwordLength: (credentials as any)?.password?.length || 0
+        })
+        console.log('🔐 Schema validation passed for:', credentials?.email)
+        
+        const { email, password } = loginSchema.parse(credentials)
+          console.log('🔐 Schema validation passed for:', email)
 
           const user = await prisma.user.findUnique({
             where: { email },
           })
 
+          console.log('🔐 Database query result:', {
+            userFound: !!user,
+            userId: user?.id,
+            userEmail: user?.email,
+            userRole: user?.role,
+            hasStoredPassword: !!user?.password,
+            storedPasswordLength: user?.password?.length || 0
+          })
+
           if (!user) {
-            console.log('User not found:', email)
+            console.log('❌ User not found:', email)
             return null
           }
 
           if (!user.password) {
-            console.log('User has no password:', email)
+            console.log('❌ User has no password (OAuth user?):', email)
             return null
           }
 
+          console.log('🔐 Comparing passwords...')
           const isValidPassword = await compare(password, user.password)
+          console.log('🔐 Password comparison result:', {
+            isValidPassword,
+            providedLength: password.length,
+            storedLength: user.password.length
+          })
 
           if (!isValidPassword) {
-            console.log('Invalid password for:', email)
+            console.log('❌ Invalid password for:', email)
             return null
           }
 
-          console.log('Auth successful for:', email)
-          return {
+          console.log('✅ Authentication successful for:', email)
+          
+          // Return user object that will be used to create the session
+          const returnUser = {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role,
           }
+          console.log('✅ Returning user object:', returnUser)
+          return returnUser
         } catch (error) {
-          console.error('Auth error:', error)
+          console.error('❌ Auth error:', error)
           return null
         }
       },
@@ -85,56 +121,128 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
+      console.log('🔑 Sign-in callback:', { 
+        email: user.email, 
+        provider: account?.provider,
+        userId: user.id,
+        hasProfile: !!profile 
+      })
+      
+      // For OAuth providers, ensure user exists in database
+      if (account?.provider === 'google' && user.email && user.name) {
         try {
-          // Check if user already exists
+          // Check if user already exists in database
           const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! }
+            where: { email: user.email },
+            select: { id: true }
           })
           
-          if (!existingUser) {
-            // Create new user with PARTICIPANT role as default for Google OAuth
-            await prisma.user.create({
+          if (existingUser) {
+            console.log('✅ Existing user found:', user.email)
+          } else {
+            // Create new user in database manually (since no adapter is used)
+            console.log('🔑 Creating new OAuth user in database:', user.email)
+            const newUser = await prisma.user.create({
               data: {
-                id: user.id!,
-                email: user.email!,
-                name: user.name!,
-                role: "PARTICIPANT", // Default role for Google sign-ups
-                password: "", // No password needed for OAuth users
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                image: user.image,
               }
             })
+            console.log('✅ Created new OAuth user:', newUser.id)
+            
+            // Link existing bookings to the new user
+            const existingBookings = await prisma.booking.findMany({
+              where: {
+                participantEmail: user.email,
+                userId: null
+              }
+            })
+            
+            if (existingBookings.length > 0) {
+              await prisma.booking.updateMany({
+                where: {
+                  participantEmail: user.email,
+                  userId: null
+                },
+                data: {
+                  userId: newUser.id
+                }
+              })
+              console.log(`✅ Linked ${existingBookings.length} existing bookings to new user`)
+            }
           }
-          
-          return true
         } catch (error) {
-          console.error("Error creating Google user:", error)
-          return false
+          console.error('❌ Error handling OAuth user creation:', error)
+          // Don't block sign-in if database operations fail
         }
       }
       
-      return true // Allow other providers
+      console.log('✅ Sign-in callback returning true')
+      return true
+    },
+    async redirect({ url, baseUrl }) {
+      // Handle redirects after sign-in
+      console.log('🔀 Redirect callback triggered:', { url, baseUrl })
+      
+      // Always redirect to dashboard after successful authentication
+      if (url.includes('/api/auth/callback/') || url === `${baseUrl}/api/auth/signin`) {
+        console.log('🔀 Redirecting from callback to dashboard')
+        return `${baseUrl}/dashboard`
+      }
+      
+      // If user is going to sign-in page, redirect to dashboard
+      if (url === `${baseUrl}/api/auth/signin`) {
+        console.log('🔀 Redirecting from signin to dashboard')
+        return `${baseUrl}/dashboard`
+      }
+      
+      // If it's a relative URL, make it absolute
+      if (url.startsWith('/')) {
+        const absoluteUrl = `${baseUrl}${url}`
+        console.log('🔀 Converting relative URL to absolute:', absoluteUrl)
+        return absoluteUrl
+      }
+      
+      // Allow same-origin redirects
+      if (url.startsWith(baseUrl)) {
+        console.log('🔀 Allowing same-origin redirect:', url)
+        return url
+      }
+      
+      // Default redirect to dashboard (will be handled by DashboardRedirect)
+      const defaultUrl = `${baseUrl}/dashboard`
+      console.log('🔀 Using default redirect to dashboard:', defaultUrl)
+      return defaultUrl
+    },
+    async session({ session, user, token }) {
+      // For JWT sessions, we need to use the token
+      console.log('📝 Session callback called (JWT mode):', { 
+        hasSession: !!session, 
+        hasUser: !!user, 
+        hasToken: !!token,
+        sessionEmail: session?.user?.email,
+        tokenSub: token?.sub 
+      })
+      
+      if (session?.user && token?.sub) {
+        session.user.id = token.sub
+        console.log('✅ JWT Session updated with user ID:', { 
+          email: session.user.email, 
+          id: session.user.id 
+        })
+      }
+      
+      return session
     },
     async jwt({ token, user }) {
+      // Add user info to JWT token when user signs in
       if (user) {
-        token.role = user.role
-      } else if (token.email) {
-        // Fetch role from database if not in token
-        const dbUser = await prisma.user.findUnique({
-          where: { email: token.email },
-          select: { role: true }
-        })
-        if (dbUser) {
-          token.role = dbUser.role
-        }
+        token.sub = user.id
+        console.log('✅ JWT token updated:', { sub: token.sub })
       }
       return token
-    },
-    async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
-      }
-      return session
     },
   },
   // Optimize for Edge Runtime

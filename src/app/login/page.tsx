@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { signIn, getSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { signInWithGoogle } from '@/hooks/useGoogleAuth'
+import { useRouter, useSearchParams } from "next/navigation"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -12,44 +13,46 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Check for error parameters in URL
+    const urlError = searchParams.get('error')
+    if (urlError) {
+      switch (urlError) {
+        case 'no_role':
+          setError('Your account exists but has no role assigned. Please contact support.')
+          break
+        case 'auth_check_failed':
+          setError('Authentication check failed. Please try logging in again.')
+          break
+        case 'session_role_missing':
+          setError('Session is missing role information. Please try logging in again.')
+          break
+        default:
+          setError('An authentication error occurred.')
+      }
+    }
+    
+    // Check for success message
+    const message = searchParams.get('message')
+    if (message) {
+      // Could show success message here if needed
+      console.log('Login page message:', message)
+    }
+  }, [searchParams])
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true)
     setError("")
     
     try {
-      console.log('🔐 Starting Google sign-in...')
-      const result = await signIn("google", {
-        redirect: false,
-      })
-      
-      if (result?.error) {
-        console.error('❌ Google sign-in failed:', result.error)
-        setError("Google sign-in failed. Please try again.")
-        return
-      }
-      
-      if (result?.ok) {
-        console.log('✅ Google sign-in successful')
-        // Wait for session to be established
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        const session = await getSession()
-        console.log('👤 Google session data:', session)
-        
-        if (session?.user?.role) {
-          const redirectPath = session.user.role === 'ORGANIZER' 
-            ? '/organizer/dashboard' 
-            : '/participant/dashboard'
-          
-          console.log(`🔀 Redirecting to: ${redirectPath}`)
-          router.push(redirectPath)
-          router.refresh()
-        }
-      }
+      // Use unified Google OAuth flow
+      await signInWithGoogle('login')
+      // NextAuth handles redirect automatically
     } catch (err) {
       console.error('❌ Google sign-in error:', err)
-      setError("An error occurred during Google sign-in. Please try again.")
+      setError(err instanceof Error ? err.message : "An error occurred during Google sign-in. Please try again.")
     } finally {
       setGoogleLoading(false)
     }
@@ -63,49 +66,28 @@ export default function LoginPage() {
     console.log('🔐 Starting login process...', { email })
 
     try {
+      // Use NextAuth with redirect: false to capture the result
       const result = await signIn("credentials", {
         email,
         password,
-        redirect: false, // Handle redirect manually
+        redirect: false, // Don't redirect automatically so we can see the result
       })
 
-      console.log('🔐 SignIn result:', result)
-
-      if (result?.error) {
-        console.error('❌ Login failed:', result.error)
-        setError("Invalid email or password")
-        return
-      }
+      console.log('🔐 NextAuth signIn result:', result)
 
       if (result?.ok) {
-        console.log('✅ Login successful, getting session...')
-        
-        // Wait a moment for session to be established
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Get fresh session data using getSession
-        const session = await getSession()
-        console.log('👤 Session data:', session)
-
-        if (session?.user?.role) {
-          const redirectPath = session.user.role === 'ORGANIZER' 
-            ? '/organizer/dashboard' 
-            : '/participant/dashboard'
-          
-          console.log(`🔀 Redirecting to: ${redirectPath}`)
-          
-          // Use router.push with replace to ensure navigation
-          router.push(redirectPath)
-          router.refresh() // Force refresh to ensure session is recognized
-        } else {
-          console.error('❌ No role found in session')
-          setError('Authentication failed. Please try again.')
-        }
+        console.log('✅ Login successful, redirecting to dashboard...')
+        // Manual redirect after successful login
+        router.push("/dashboard")
+      } else {
+        console.error('❌ Login failed:', result?.error)
+        setError(result?.error || "Invalid email or password")
+        setLoading(false)
       }
+      
     } catch (err) {
       console.error('❌ Login error:', err)
       setError(`An error occurred: ${err instanceof Error ? err.message : 'Please try again.'}`)
-    } finally {
       setLoading(false)
     }
   }

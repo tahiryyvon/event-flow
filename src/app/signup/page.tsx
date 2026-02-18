@@ -3,14 +3,15 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { signIn, getSession } from "next-auth/react"
+import { signIn } from "next-auth/react"
+import { signInWithGoogle } from '@/hooks/useGoogleAuth'
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "ORGANIZER" as "ORGANIZER" | "PARTICIPANT",
+    confirmPassword: "",
   })
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
@@ -22,36 +23,12 @@ export default function SignupPage() {
     setError("")
     
     try {
-      console.log('🔐 Starting Google sign-up...')
-      const result = await signIn("google", {
-        redirect: false,
-      })
-      
-      if (result?.error) {
-        console.error('❌ Google sign-up failed:', result.error)
-        setError("Google sign-up failed. Please try again.")
-        return
-      }
-      
-      if (result?.ok) {
-        console.log('✅ Google sign-up successful')
-        // Wait for session to be established
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        const session = await getSession()
-        console.log('👤 Google session data:', session)
-        
-        if (session?.user?.role) {
-          // New Google users get PARTICIPANT role by default
-          const redirectPath = '/participant/dashboard'
-          
-          console.log(`🔀 Redirecting to: ${redirectPath}`)
-          router.push(redirectPath)
-        }
-      }
+      // Use unified Google OAuth flow
+      await signInWithGoogle('signup')
+      // NextAuth handles redirect automatically
     } catch (err) {
       console.error('❌ Google sign-up error:', err)
-      setError("An error occurred during Google sign-up. Please try again.")
+      setError(err instanceof Error ? err.message : "An error occurred during Google sign-up. Please try again.")
     } finally {
       setGoogleLoading(false)
     }
@@ -62,13 +39,31 @@ export default function SignupPage() {
     setLoading(true)
     setError("")
 
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match")
+      setLoading(false)
+      return
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters long")
+      setLoading(false)
+      return
+    }
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
       })
 
       const data = await response.json()
@@ -170,50 +165,63 @@ export default function SignupPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Account Type
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="ORGANIZER"
-                    checked={formData.role === "ORGANIZER"}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value as "ORGANIZER" })
-                    }
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    style={{ accentColor: '#2563eb' }}
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    <strong>Organizer</strong> - I want to create and manage events
-                  </span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="PARTICIPANT"
-                    checked={formData.role === "PARTICIPANT"}
-                    onChange={(e) =>
-                      setFormData({ ...formData, role: e.target.value as "PARTICIPANT" })
-                    }
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    style={{ accentColor: '#2563eb' }}
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    <strong>Participant</strong> - I want to book events created by others
-                  </span>
-                </label>
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  minLength={6}
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, confirmPassword: e.target.value })
+                  }
+                  className="mt-1 block w-full px-4 py-3 border-2 border-gray-300 placeholder-gray-500 text-black bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors pr-10"
+                  placeholder="Re-enter your password"
+                  style={{ color: '#000000 !important', backgroundColor: '#ffffff !important' }}
+                />
+                {formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                    <svg className="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                )}
               </div>
+              {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600 flex items-center">
+                  <svg className="h-4 w-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                  Passwords do not match
+                </p>
+              )}
+              {formData.password && formData.confirmPassword && formData.password === formData.confirmPassword && (
+                <p className="mt-1 text-sm text-green-600 flex items-center">
+                  <svg className="h-4 w-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                  Passwords match
+                </p>
+              )}
             </div>
           </div>
 
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={
+                loading || 
+                (formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword) ||
+                !formData.name ||
+                !formData.email ||
+                !formData.password ||
+                !formData.confirmPassword
+              }
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating account..." : "Create account"}

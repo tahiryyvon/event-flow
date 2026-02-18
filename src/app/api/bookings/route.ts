@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 
@@ -7,6 +8,60 @@ const createBookingSchema = z.object({
   participantName: z.string().min(1, "Name is required"),
   participantEmail: z.string().email("Invalid email address"),
 })
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth()
+    
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('userId')
+    
+    if (!userId || userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
+    // Get all bookings for this user
+    const bookings = await prisma.booking.findMany({
+      where: {
+        participantEmail: session.user.email!,
+      },
+      include: {
+        event: {
+          select: {
+            id: true,
+            title: true,
+            startDate: true,
+            endDate: true,
+            startTime: true,
+            endTime: true,
+            type: true,
+            organizer: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return NextResponse.json(bookings)
+  } catch (error) {
+    console.error("Get bookings error:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

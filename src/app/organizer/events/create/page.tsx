@@ -8,6 +8,7 @@ export default function CreateEventPage() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    type: "PUBLIC" as "PRIVATE" | "PUBLIC",
     isMultiDay: false,
     startDate: "",
     endDate: "",
@@ -130,7 +131,47 @@ export default function CreateEventPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Event Type *
+                  Event Visibility *
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="eventVisibility"
+                      value="PUBLIC"
+                      checked={formData.type === "PUBLIC"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, type: e.target.value as "PUBLIC" | "PRIVATE" })
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      style={{ accentColor: '#2563eb' }}
+                    />
+                    <span className="ml-2 text-sm text-gray-700">
+                      <strong>Public Event</strong> - Anyone can view and book this event with a shareable link
+                    </span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="eventVisibility"
+                      value="PRIVATE"
+                      checked={formData.type === "PRIVATE"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, type: e.target.value as "PUBLIC" | "PRIVATE" })
+                      }
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      style={{ accentColor: '#2563eb' }}
+                    />
+                    <span className="ml-2 text-sm text-gray-700">
+                      <strong>Private Event</strong> - Only you can see this event and manually add participants
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Event Duration *
                 </label>
                 <div className="space-y-2">
                   <label className="flex items-center">

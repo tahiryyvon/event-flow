@@ -47,7 +47,6 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?   // For credentials provider
-  role          Role      @default(PARTICIPANT)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -69,6 +68,8 @@ model Event {
   id          String   @id @default(cuid())
   title       String
   description String?
+  banner      String?  // URL or path to banner image
+  type        EventType @default(PUBLIC) // Event visibility: PRIVATE or PUBLIC
   startDate   DateTime // Event start date
   endDate     DateTime // Event end date (can be same day for single-day events)
   startTime   DateTime // Daily start time
@@ -106,9 +107,9 @@ model Booking {
   userId  String?
 }
 
-enum Role {
-  ORGANIZER
-  PARTICIPANT
+enum EventType {
+  PRIVATE
+  PUBLIC
 }
 
 // Future enums for upgrade path

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Debug</title>
+    <script>
+        async function testDashboardAPIs() {
+            console.log('🔍 Testing dashboard API calls...');
+            
+            try {
+                // Check session
+                console.log('1. Checking session...');
+                const sessionResponse = await fetch('/api/auth/session');
+                const session = await sessionResponse.json();
+                console.log('Session:', session);
+                
+                if (!session || !session.user || !session.user.id) {
+                    console.log('❌ No valid session found. User needs to log in.');
+                    document.getElementById('result').innerHTML = `
+                        <h2>❌ No Session Found</h2>
+                        <p>You need to log in first.</p>
+                        <a href="/login">Go to Login</a>
+                    `;
+                    return;
+                }
+                
+                console.log('✅ Valid session found for user:', session.user.id);
+                
+                // Test events API
+                console.log('2. Testing events API...');
+                const eventsResponse = await fetch(`/api/events?organizerId=${session.user.id}`);
+                console.log('Events response status:', eventsResponse.status);
+                
+                if (eventsResponse.ok) {
+                    const events = await eventsResponse.json();
+                    console.log('✅ Events fetched successfully:', events.length, 'events');
+                } else {
+                    console.log('❌ Events API failed:', eventsResponse.status, eventsResponse.statusText);
+                }
+                
+                // Test bookings API
+                console.log('3. Testing bookings API...');
+                const bookingsResponse = await fetch(`/api/bookings?userId=${session.user.id}`);
+                console.log('Bookings response status:', bookingsResponse.status);
+                
+                if (bookingsResponse.ok) {
+                    const bookings = await bookingsResponse.json();
+                    console.log('✅ Bookings fetched successfully:', bookings.length, 'bookings');
+                } else {
+                    console.log('❌ Bookings API failed:', bookingsResponse.status, bookingsResponse.statusText);
+                }
+                
+                document.getElementById('result').innerHTML = `
+                    <h2>✅ Dashboard APIs Working</h2>
+                    <p>Check console for detailed logs</p>
+                    <a href="/dashboard">Go to Dashboard</a>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Error during API test:', error);
+                document.getElementById('result').innerHTML = `
+                    <h2>❌ API Test Failed</h2>
+                    <p>Error: ${error.message}</p>
+                    <p>Check console for details</p>
+                `;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Dashboard Debug Tool</h1>
+    <button onclick="testDashboardAPIs()">Test Dashboard APIs</button>
+    <div id="result"></div>
+    
+    <h2>Manual Tests:</h2>
+    <ul>
+        <li><a href="/api/auth/session" target="_blank">Check Session</a></li>
+        <li><a href="/dashboard" target="_blank">Go to Dashboard</a></li>
+        <li><a href="/login" target="_blank">Login Page</a></li>
+    </ul>
+</body>
+</html>
