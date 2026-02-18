@@ -1,5 +1,4 @@
 import { ReactNode } from 'react'
-import { cn } from '@/lib/utils'
 
 interface BadgeProps {
   children: ReactNode
@@ -21,11 +20,11 @@ export function Badge({
 }: BadgeProps) {
   const baseClasses = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
   
-  const classes = cn(
+  const classes = [
     baseClasses,
     badgeVariants[variant],
     className
-  )
+  ].filter(Boolean).join(' ')
 
   return (
     <span className={classes}>

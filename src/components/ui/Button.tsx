@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
 
 interface ButtonProps {
   children: ReactNode
@@ -38,12 +37,12 @@ export function Button({
 }: ButtonProps) {
   const baseClasses = 'inline-flex items-center justify-center rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
   
-  const classes = cn(
+  const classes = [
     baseClasses,
     buttonVariants[variant],
     buttonSizes[size],
     className
-  )
+  ].filter(Boolean).join(' ')
 
   if (href) {
     return (
