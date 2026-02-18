@@ -150,9 +150,9 @@ export default function Dashboard() {
     }
   }
 
-  // Load initial public events when find-events tab is active
+  // Load initial public events when overview tab is active or on first load
   useEffect(() => {
-    if (activeTab === 'find-events' && publicEvents.length === 0 && !searchLoading) {
+    if (activeTab === 'overview' && publicEvents.length === 0 && !searchLoading) {
       searchPublicEvents('')
     }
   }, [activeTab, publicEvents.length, searchLoading, searchPublicEvents])
@@ -165,6 +165,12 @@ export default function Dashboard() {
       return // Wait for auth status to be determined
     }
     
+    // Load public events regardless of authentication (they are public!)
+    if (publicEvents.length === 0 && !searchLoading) {
+      console.log('📊 Loading initial public events...')
+      searchPublicEvents('')
+    }
+    
     if (status === 'authenticated' && session?.user?.id) {
       console.log('📊 User authenticated, fetching dashboard data')
       fetchDashboardData()
@@ -173,7 +179,7 @@ export default function Dashboard() {
       // If not authenticated or no user ID, stop loading
       setLoading(false)
     }
-  }, [status, session?.user?.id, fetchDashboardData])
+  }, [status, session?.user?.id, fetchDashboardData, publicEvents.length, searchLoading, searchPublicEvents])
 
   const formatDateTime = (date: string, time: string) => {
     const eventDate = new Date(date)
